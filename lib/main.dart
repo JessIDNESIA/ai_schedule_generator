@@ -1,8 +1,20 @@
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart'; // untuk kReleaseMode
+import 'package:flutter/material.dart';
+
+import 'ui/home_screen.dart';
+
 void main() {
   runApp(
     DevicePreview(
-      enabled: !kReleaseMode, // Aktif hanya saat development (non-release)
-      builder: (context) => const MainApp(), // Root aplikasi
+      enabled: !kReleaseMode, // mati otomatis saat build release
+      defaultDevice: Devices.ios.iPhone11ProMax,
+      devices: [
+        Devices.ios.iPhone11ProMax,
+        // Devices.android.samsungGalaxyS23Ultra,
+        Devices.ios.iPadPro11Inches,
+      ],
+      builder: (context) => const MainApp(),
     ),
   );
 }
@@ -14,8 +26,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      useInheritedMediaQuery:
-          true, // Mengikuti ukuran device dari DevicePreview
+
       locale: DevicePreview.locale(context), // Menyesuaikan locale preview
       builder:
           DevicePreview.appBuilder, // Builder untuk integrasi DevicePreview
