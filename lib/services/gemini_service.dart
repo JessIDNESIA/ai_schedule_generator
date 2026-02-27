@@ -1,12 +1,13 @@
 import 'dart:convert'; // Untuk encode/decode JSON
 import 'package:http/http.dart' as http;
+import '../config/api_config.dart'; // Secure API key dari .env
 
 class GeminiService {
-  // API Key - GANTI dengan milikmu (jangan hardcode di production!)
-  static const String apiKey = "AIzaSyAXNR9nZ0xm7gwYVUm9AlXohiLepfNJr6s";
+  // API Key diload dari ApiConfig (aman, tidak hardcoded)
 
   // Gunakan model stabil terbaru (per 2026: gemini-1.5-flash atau gemini-1.5-flash-latest)
-  static const String model = "gemini-1.5-flash"; // atau "gemini-1.5-flash-latest"
+  static const String model =
+      "gemini-1.5-flash"; // atau "gemini-1.5-flash-latest"
 
   // Endpoint Gemini API (generateContent)
   static const String baseUrl =
@@ -16,11 +17,18 @@ class GeminiService {
     List<Map<String, dynamic>> tasks,
   ) async {
     try {
+      // Validasi API key sudah ter-initialize
+      if (!ApiConfig.isConfigured()) {
+        throw Exception(
+          'API key belum di-initialize. Hubungi ApiConfig.initialize() di main.dart',
+        );
+      }
+
       // Bangun prompt dari data tugas
       final prompt = _buildPrompt(tasks);
 
-      // Siapkan URL dengan API key sebagai query param
-      final url = Uri.parse('$baseUrl?key=$apiKey');
+      // Siapkan URL dengan API key dari ApiConfig
+      final url = Uri.parse('$baseUrl?key=${ApiConfig.geminiApiKey}');
 
       // Body request sesuai spec resmi Gemini
       final requestBody = {
@@ -59,9 +67,13 @@ class GeminiService {
         }
         return "Tidak ada jadwal yang dihasilkan dari AI.";
       } else {
-        print("API Error - Status: ${response.statusCode}, Body: ${response.body}");
+        print(
+          "API Error - Status: ${response.statusCode}, Body: ${response.body}",
+        );
         if (response.statusCode == 429) {
-          throw Exception("Rate limit tercapai (429). Tunggu beberapa menit atau upgrade quota.");
+          throw Exception(
+            "Rate limit tercapai (429). Tunggu beberapa menit atau upgrade quota.",
+          );
         }
         if (response.statusCode == 401) {
           throw Exception("API key tidak valid (401). Periksa key Anda.");
@@ -69,7 +81,9 @@ class GeminiService {
         if (response.statusCode == 400) {
           throw Exception("Request salah format (400): ${response.body}");
         }
-        throw Exception("Gagal memanggil Gemini API (Code: ${response.statusCode})");
+        throw Exception(
+          "Gagal memanggil Gemini API (Code: ${response.statusCode})",
+        );
       }
     } catch (e) {
       print("Exception saat generate schedule: $e");
@@ -79,11 +93,17 @@ class GeminiService {
 
   static String _buildPrompt(List<Map<String, dynamic>> tasks) {
     StringBuffer buffer = StringBuffer();
-    buffer.writeln("Buatkan jadwal harian yang optimal berdasarkan daftar tugas berikut:");
+    buffer.writeln(
+      "Buatkan jadwal harian yang optimal berdasarkan daftar tugas berikut:",
+    );
     for (var task in tasks) {
-      buffer.writeln("- ${task['name']} (Prioritas: ${task['priority']}, Durasi: ${task['duration']} menit)");
+      buffer.writeln(
+        "- ${task['name']} (Prioritas: ${task['priority']}, Durasi: ${task['duration']} menit)",
+      );
     }
-    buffer.writeln("\nFormat output harus dalam Markdown yang rapi. Sertakan jam mulai dan selesai untuk setiap tugas. Berikan jeda istirahat yang wajar.");
+    buffer.writeln(
+      "\nFormat output harus dalam Markdown yang rapi. Sertakan jam mulai dan selesai untuk setiap tugas. Berikan jeda istirahat yang wajar.",
+    );
     return buffer.toString();
   }
 }

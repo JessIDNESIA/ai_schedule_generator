@@ -1,10 +1,26 @@
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart'; // untuk kReleaseMode
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'config/api_config.dart';
 import 'ui/home_screen.dart';
 
-void main() {
+void main() async {
+  // Pastikan Flutter binding sudah initialized
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Load .env file (hanya di development, akan diabaikan di production)
+  await dotenv.load(fileName: '.env');
+
+  // Initialize API config (load API key dari .env)
+  try {
+    await ApiConfig.initialize();
+  } catch (e) {
+    // Log error tapi jangan crash app - akan trigger error saat AI digunakan
+    debugPrint('⚠️ API Config Error: $e');
+  }
+
   runApp(
     DevicePreview(
       enabled: !kReleaseMode, // mati otomatis saat build release

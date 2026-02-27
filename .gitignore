@@ -44,6 +44,11 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# --- API Keys & Secrets (SECURITY) ---
+.env
+.env.local
+.env.*.local
+
 # --- Tambahan sesuai permintaan ---
 android/.gradle/
 android/local.properties
