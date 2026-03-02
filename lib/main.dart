@@ -1,3 +1,5 @@
+import 'package:device_preview/device_preview.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +30,18 @@ void main() async {
   runApp(
     ChangeNotifierProvider.value(
       value: themeProvider,
-      child: const MainApp(),
+      child: DevicePreview(
+        enabled: !kReleaseMode, // mati otomatis saat build release
+        defaultDevice: Devices.ios.iPhone13ProMax,
+        devices: [
+          Devices.ios.iPhone13ProMax,
+          Devices.ios.iPhoneSE,
+          Devices.android.samsungGalaxyS20,
+          Devices.android.samsungGalaxyNote20,
+          Devices.ios.iPadPro11Inches,
+        ],
+        builder: (context) => const MainApp(),
+      ),
     ),
   );
 }
@@ -42,8 +55,11 @@ class MainApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'AI Schedule Generator',
+          locale: DevicePreview.locale(context), // Menyesuaikan locale preview
+          builder: DevicePreview.appBuilder, // Builder untuk integrasi DevicePreview
+
+          debugShowCheckedModeBanner: false, // Menghilangkan banner debug
+          title: 'AI Schedule Generator', // Judul aplikasi
 
           // Apply theme based on provider
           theme: AppTheme.lightTheme,

@@ -39,12 +39,12 @@ class GeminiService {
             ],
           },
         ],
-        // Optional: tambah konfigurasi (temperature, maxOutputTokens, dll)
+        // Maximize tokens for a full day 24h schedule + detailed notes
         "generationConfig": {
-          "temperature": 0.7,
+          "temperature": 0.8, // Slightly higher for better variety in routine tasks
           "topK": 40,
           "topP": 0.95,
-          "maxOutputTokens": 1024,
+          "maxOutputTokens": 4096,
         },
       };
 
@@ -94,15 +94,21 @@ class GeminiService {
   static String _buildPrompt(List<Map<String, dynamic>> tasks) {
     StringBuffer buffer = StringBuffer();
     buffer.writeln(
-      "Buatkan jadwal harian yang optimal berdasarkan daftar tugas berikut:",
+      "Sebagai AI Perencana Jadwal Profesional, buatkan jadwal harian yang LOGIS, PRODUKTIF, dan LENGKAP 24 JAM (00:00 - 23:59).",
     );
+    buffer.writeln("\nDAFTAR TUGAS UTAMA (WAJIB dimasukkan di jam produktif):");
     for (var task in tasks) {
       buffer.writeln(
         "- ${task['name']} (Prioritas: ${task['priority']}, Durasi: ${task['duration']} menit)",
       );
     }
     buffer.writeln(
-      "\nFormat output harus dalam Markdown yang rapi. Sertakan jam mulai dan selesai untuk setiap tugas. Berikan jeda istirahat yang wajar.",
+      "\nATURAN OUTPUT (WAJIB PATUH):"
+      "\n1. FORMAT TABEL: Gunakan Tabel Markdown dengan kolom: Waktu (Mulai - Selesai), Kegiatan, Prioritas, Durasi, dan Keterangan."
+      "\n2. DURASI 24 JAM: Mulailah dari bangun pagi (sekitar 04:00/05:00) hingga tidur kembali. Masukkan kegiatan rutin (makan, ibadah, mandi, istirahat, hobi, santai) secara detail agar jadwal penuh 24 jam."
+      "\n3. TUGAS UTAMA: Prioritas 'Tinggi' harus mendapat waktu terbaik."
+      "\n4. CATATAN TAMBAHAN: Di bawah tabel, WAJIB tambahkan section '### 💡 Catatan Tambahan' yang berisi tips sukses hari ini dan kata-kata motivasi."
+      "\n5. BAHASA: Gunakan Bahasa Indonesia yang sopan dan profesional.",
     );
     return buffer.toString();
   }

@@ -55,7 +55,7 @@ class ScheduleResultScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 15),
-              // AREA HASIL (MARKDOWN)
+              // AREA HASIL (MARKDOWN DENGAN HORIZONTAL SCROLL)
               Expanded(
                 child: Container(
                   decoration: BoxDecoration(
@@ -69,27 +69,38 @@ class ScheduleResultScreen extends StatelessWidget {
                       ),
                     ],
                   ),
-                  // Markdown otomatis memiliki scroll
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: Markdown(
-                      data: scheduleResult, // Data dari AI
-                      selectable: true, // Bisa copy sebagian teks
-                      padding: const EdgeInsets.all(20),
-                      // Styling agar tampilan lebih profesional
-                      styleSheet: MarkdownStyleSheet(
-                        p: const TextStyle(fontSize: 15, height: 1.6, color: Colors.black87),
-                        // Styling heading
-                        h1: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.indigo),
-                        h2: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                        h3: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.indigoAccent),
-                        // Styling tabel
-                        tableBorder: TableBorder.all(color: Colors.grey, width: 1),
-                        tableHeadAlign: TextAlign.center,
-                        tablePadding: const EdgeInsets.all(8),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minWidth: MediaQuery.of(context).size.width - 32,
+                            // Beri maxWidth yang cukup besar agar table tidak terpotong
+                            maxWidth: 1000, 
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: MarkdownBody(
+                              data: scheduleResult,
+                              selectable: true,
+                              styleSheet: MarkdownStyleSheet(
+                                p: const TextStyle(fontSize: 15, height: 1.6, color: Colors.black87),
+                                h1: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.indigo),
+                                h2: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                h3: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.indigoAccent),
+                                tableBorder: TableBorder.all(color: Colors.grey.shade300, width: 1),
+                                tableHeadAlign: TextAlign.center,
+                                tablePadding: const EdgeInsets.all(12),
+                                tableHead: const TextStyle(fontWeight: FontWeight.bold),
+                                tableBody: const TextStyle(fontSize: 13),
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                      // Custom builder (opsional/advanced)
-                      builders: {'table': TableBuilder()},
                     ),
                   ),
                 ),
@@ -109,21 +120,6 @@ class ScheduleResultScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-}
-
-
-
-class TableBuilder extends MarkdownElementBuilder {
-  @override
-  Widget? visitElementAfterWithContext(
-    BuildContext context,
-    dynamic element,
-    TextStyle? preferredStyle,
-    TextStyle? parentStyle,
-  ) {
-    // Menggunakan render default (tidak diubah)
-    return null;
   }
 }
 
