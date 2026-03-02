@@ -28,7 +28,7 @@ class Schedule {
   factory Schedule.fromJson(Map<String, dynamic> json) {
     return Schedule(
       id: json['id'] as String,
-      taskIds: List<String>.from(json['taskIds'] as List ?? []),
+      taskIds: List<String>.from(json['taskIds'] as List? ?? []),
       rawContent: json['rawContent'] as String,
       formattedContent: json['formattedContent'] as String,
       generatedAt: DateTime.parse(json['generatedAt'] as String),

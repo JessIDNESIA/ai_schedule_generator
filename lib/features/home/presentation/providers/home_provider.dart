@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../data/models/task.dart';
 import '../../data/models/schedule.dart';
-import '../../../services/gemini_service.dart';
+import '../../../../services/gemini_service.dart';
 import 'package:uuid/uuid.dart';
 
 /// Provider untuk manage state home screen

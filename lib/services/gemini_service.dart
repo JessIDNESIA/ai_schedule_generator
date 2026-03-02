@@ -7,7 +7,7 @@ class GeminiService {
 
   // Gunakan model stabil terbaru (per 2026: gemini-1.5-flash atau gemini-1.5-flash-latest)
   static const String model =
-      "gemini-1.5-flash"; // atau "gemini-1.5-flash-latest"
+      "gemini-flash-latest"; // atau "gemini-1.5-flash-latest"
 
   // Endpoint Gemini API (generateContent)
   static const String baseUrl =

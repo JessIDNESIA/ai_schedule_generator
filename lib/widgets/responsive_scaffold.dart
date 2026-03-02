@@ -17,13 +17,13 @@ class ResponsiveScaffold extends StatelessWidget {
   final Widget? mobileBottomContent;
 
   const ResponsiveScaffold({
-    Key? key,
+    super.key,
     required this.appBarTitle,
     this.appBarActions,
     required this.leftPanel,
     this.rightPanel,
     this.mobileBottomContent,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

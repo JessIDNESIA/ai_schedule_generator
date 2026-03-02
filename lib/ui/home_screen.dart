@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '/services/gemini_service.dart'; // Service untuk memanggil AI
+import '../services/gemini_service.dart'; // Service untuk memanggil AI
 import 'schedule_result_screen.dart';
 
 class HomeScreen extends StatefulWidget {

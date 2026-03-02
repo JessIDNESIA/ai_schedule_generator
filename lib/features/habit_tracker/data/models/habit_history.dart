@@ -1,4 +1,4 @@
-import '../models/task_completion.dart';
+import '../../../home/data/models/task_completion.dart';
 
 /// Model untuk tracking habit/task completion history
 /// Manages current streak, longest streak, dan completion statistics
