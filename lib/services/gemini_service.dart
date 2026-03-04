@@ -104,11 +104,14 @@ class GeminiService {
     }
     buffer.writeln(
       "\nATURAN OUTPUT (WAJIB PATUH):"
-      "\n1. FORMAT TABEL: Gunakan Tabel Markdown dengan kolom: Waktu (Mulai - Selesai), Kegiatan, Prioritas, Durasi, dan Keterangan."
-      "\n2. DURASI 24 JAM: Mulailah dari bangun pagi (sekitar 04:00/05:00) hingga tidur kembali. Masukkan kegiatan rutin (makan, ibadah, mandi, istirahat, hobi, santai) secara detail agar jadwal penuh 24 jam."
+      "\n1. FORMAT TABEL: Gunakan Tabel Markdown dengan kolom: Waktu (HH:mm), Kegiatan, Prioritas (High/Med/Low/Crit/--), dan Keterangan."
+      "\n2. DURASI 24 JAM: Mulailah dari 00:00 hingga 23:59. Masukkan kegiatan rutin (tidur, makan, ibadah, mandi, istirahat, hobi, santai) secara detail agar jadwal penuh 24 jam."
       "\n3. TUGAS UTAMA: Prioritas 'Tinggi' harus mendapat waktu terbaik."
-      "\n4. CATATAN TAMBAHAN: Di bawah tabel, WAJIB tambahkan section '### 💡 Catatan Tambahan' yang berisi tips sukses hari ini dan kata-kata motivasi."
-      "\n5. BAHASA: Gunakan Bahasa Indonesia yang sopan dan profesional.",
+      "\n4. SECTION WELLNESS: Tambahkan section '### 🌿 Tips Wellness & Mental Health' yang berisi 3 tips singkat tentang kesehatan mental/fisik."
+      "\n5. SECTION SUCCESS TIPS: Tambahkan section '### 💡 Tips Sukses Hari Ini' yang berisi 2-3 tips produktivitas spesifik untuk jadwal ini."
+      "\n6. MOTIVASI: Tambahkan section '### 🎯 Motivasi Hari Ini' yang berisi satu kata bijak dari tokoh terkenal terkait manajemen waktu atau kesuksesan."
+      "\n7. EFFICIENCY SCORE: Tambahkan baris di paling bawah: 'Efficiency Score: [0-100]%'."
+      "\n8. BAHASA: Gunakan Bahasa Indonesia yang sopan dan profesional.",
     );
     return buffer.toString();
   }
