@@ -4,6 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 /// Handles loading API keys dari .env file secara aman
 class ApiConfig {
   static late String geminiApiKey;
+  static late String googleClientId;
 
   /// Initialize configurasi API pada startup
   /// Wajib dipanggil sebelum menggunakan API services
@@ -11,6 +12,7 @@ class ApiConfig {
     try {
       // Load dari .env file
       geminiApiKey = dotenv.env['GEMINI_API_KEY'] ?? '';
+      googleClientId = dotenv.env['GOOGLE_CLIENT_ID'] ?? '';
 
       // Validasi API key
       if (geminiApiKey.isEmpty) {

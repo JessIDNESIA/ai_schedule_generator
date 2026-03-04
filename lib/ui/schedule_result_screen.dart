@@ -1,25 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Untuk fitur copy ke clipboard
 import 'package:flutter_markdown/flutter_markdown.dart'; // Untuk render Markdown
+import '../services/google_calendar_service.dart';
 
-class ScheduleResultScreen extends StatelessWidget {
+class ScheduleResultScreen extends StatefulWidget {
   final String scheduleResult; // Data hasil dari AI
   const ScheduleResultScreen({super.key, required this.scheduleResult});
+
+  @override
+  State<ScheduleResultScreen> createState() => _ScheduleResultScreenState();
+}
+
+class _ScheduleResultScreenState extends State<ScheduleResultScreen> {
+  bool _isExporting = false;
+
+  Future<void> _exportToGoogleCalendar() async {
+    setState(() => _isExporting = true);
+    try {
+      final success = await GoogleCalendarService.exportToCalendar(widget.scheduleResult);
+      if (!mounted) return;
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Berhasil ekspor ke Google Calendar!"),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Gagal ekspor ke Google Calendar. Pastikan Anda sudah login."),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e"), backgroundColor: Colors.red),
+      );
+    } finally {
+      if (mounted) setState(() => _isExporting = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[50],
-      // APP BAR + COPY BUTTON
+      // APP BAR + COPY & EXPORT BUTTONS
       appBar: AppBar(
         title: const Text("Hasil Jadwal Optimal"),
         actions: [
+          // TOMBOL EXPORT GOOGLE CALENDAR
+          _isExporting
+              ? const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                  ),
+                )
+              : IconButton(
+                  icon: const Icon(Icons.event),
+                  tooltip: "Export ke Google Calendar",
+                  onPressed: _exportToGoogleCalendar,
+                ),
           IconButton(
             icon: const Icon(Icons.copy),
             tooltip: "Salin Jadwal",
             onPressed: () {
               // Menyalin seluruh hasil ke clipboard
-              Clipboard.setData(ClipboardData(text: scheduleResult));
+              Clipboard.setData(ClipboardData(text: widget.scheduleResult));
               // Notifikasi kecil ke user
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text("Jadwal berhasil disalin!")),
@@ -84,7 +138,7 @@ class ScheduleResultScreen extends StatelessWidget {
                           child: Padding(
                             padding: const EdgeInsets.all(20),
                             child: MarkdownBody(
-                              data: scheduleResult,
+                              data: widget.scheduleResult,
                               selectable: true,
                               styleSheet: MarkdownStyleSheet(
                                 p: const TextStyle(fontSize: 15, height: 1.6, color: Colors.black87),
