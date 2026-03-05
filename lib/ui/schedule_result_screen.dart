@@ -14,6 +14,7 @@ class ScheduleResultScreen extends StatefulWidget {
 class _ScheduleResultScreenState extends State<ScheduleResultScreen> {
   bool _isExporting = false;
   late final ParsedSchedule _parsedData;
+  String _selectedFilter = "All Tasks";
 
   @override
   void initState() {
@@ -217,11 +218,11 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                       child: Row(
                         children: [
-                          _buildFilterChip("All Tasks", Icons.view_list, true, theme),
+                          _buildFilterChip("All Tasks", Icons.view_list, _selectedFilter == "All Tasks", theme),
                           const SizedBox(width: 12),
-                          _buildFilterChip("High Priority", Icons.priority_high, false, theme),
+                          _buildFilterChip("High Priority", Icons.priority_high, _selectedFilter == "High Priority", theme),
                           const SizedBox(width: 12),
-                          _buildFilterChip("Meetings", Icons.groups, false, theme),
+                          _buildFilterChip("Meetings", Icons.groups, _selectedFilter == "Meetings", theme),
                         ],
                       ),
                     ),
@@ -238,7 +239,7 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen> {
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: SizedBox(
-                            width: 500, // Ensuring enough width for horizontal scroll
+                            width: 600, // Increased width for horizontal alignment
                             child: Column(
                               children: [
                                 Container(
@@ -250,14 +251,14 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen> {
                                   ),
                                   child: Row(
                                     children: [
-                                      SizedBox(width: 60, child: Text("Time", style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12, fontWeight: FontWeight.bold))),
+                                      SizedBox(width: 110, child: Text("Time", style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12, fontWeight: FontWeight.bold))),
                                       Expanded(child: Text("Task / Activity", style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12, fontWeight: FontWeight.bold))),
                                       SizedBox(width: 80, child: Text("Priority", style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12, fontWeight: FontWeight.bold), textAlign: TextAlign.center)),
                                     ],
                                   ),
                                 ),
-                                ...List.generate(_parsedData.items.length, (index) {
-                                  final item = _parsedData.items[index];
+                                ...List.generate(_getFilteredItems().length, (index) {
+                                  final item = _getFilteredItems()[index];
                                   return _buildScheduleRow(item, theme);
                                 }),
                               ],
@@ -397,21 +398,45 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen> {
     );
   }
 
+  List<ScheduleItem> _getFilteredItems() {
+    if (_selectedFilter == "All Tasks") return _parsedData.items;
+    if (_selectedFilter == "High Priority") {
+      return _parsedData.items.where((item) {
+        final p = item.priority.toLowerCase();
+        return p.contains('crit') || p.contains('high');
+      }).toList();
+    }
+    if (_selectedFilter == "Meetings") {
+      return _parsedData.items.where((item) {
+        final act = item.activity.toLowerCase();
+        return act.contains('meeting') || act.contains('sync');
+      }).toList();
+    }
+    return _parsedData.items;
+  }
+
   Widget _buildFilterChip(String label, IconData icon, bool selected, ThemeData theme) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: selected ? theme.colorScheme.primary : theme.colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(20),
-        border: selected ? null : Border.all(color: theme.colorScheme.outlineVariant),
-        boxShadow: selected ? [BoxShadow(color: theme.colorScheme.primary.withValues(alpha: 0.2), blurRadius: 10, offset: const Offset(0, 4))] : null,
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 16, color: selected ? Colors.white : theme.colorScheme.onSurfaceVariant),
-          const SizedBox(width: 8),
-          Text(label, style: TextStyle(color: selected ? Colors.white : theme.colorScheme.onSurfaceVariant, fontWeight: selected ? FontWeight.bold : FontWeight.normal, fontSize: 13)),
-        ],
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedFilter = label;
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? theme.colorScheme.primary : theme.colorScheme.surfaceContainer,
+          borderRadius: BorderRadius.circular(20),
+          border: selected ? null : Border.all(color: theme.colorScheme.outlineVariant),
+          boxShadow: selected ? [BoxShadow(color: theme.colorScheme.primary.withValues(alpha: 0.2), blurRadius: 10, offset: const Offset(0, 4))] : null,
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 16, color: selected ? Colors.white : theme.colorScheme.onSurfaceVariant),
+            const SizedBox(width: 8),
+            Text(label, style: TextStyle(color: selected ? Colors.white : theme.colorScheme.onSurfaceVariant, fontWeight: selected ? FontWeight.bold : FontWeight.normal, fontSize: 13)),
+          ],
+        ),
       ),
     );
   }
@@ -429,8 +454,13 @@ class _ScheduleResultScreenState extends State<ScheduleResultScreen> {
         crossAxisAlignment: CrossAxisAlignment.start, // Align top for multiline
         children: [
           SizedBox(
-            width: 60,
-            child: Text(item.time, style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12, fontFamily: 'monospace')),
+            width: 110,
+            child: Text(
+              item.time, 
+              style: TextStyle(color: theme.colorScheme.onSurfaceVariant, fontSize: 12, fontFamily: 'monospace'),
+              softWrap: false,
+              overflow: TextOverflow.visible,
+            ),
           ),
           Expanded(
             child: Column(
