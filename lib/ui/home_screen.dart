@@ -389,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Hello, User",
+                            "Hello, Jose",
                             style: theme.textTheme.displayLarge?.copyWith(fontSize: 24),
                           ),
                           Text(
