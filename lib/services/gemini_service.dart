@@ -5,13 +5,13 @@ import '../config/api_config.dart'; // Secure API key dari .env
 class GeminiService {
   // API Key diload dari ApiConfig (aman, tidak hardcoded)
 
-  // Gunakan model stabil terbaru (per 2026: gemini-1.5-flash atau gemini-1.5-flash-latest)
+  // Menggunakan gemini-3.1-flash-lite karena model flash lainnya sedang mengalami 503 High Demand di Free Tier
   static const String model =
-      "gemini-flash-latest"; // atau "gemini-1.5-flash-latest"
+      "gemini-3.1-flash-lite"; // Model paling ringan dan stabil saat ini
 
   // Endpoint Gemini API (generateContent)
   static const String baseUrl =
-      "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent";
+      "https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent";
 
   static Future<String> generateSchedule(
     List<Map<String, dynamic>> tasks,
@@ -80,6 +80,11 @@ class GeminiService {
         }
         if (response.statusCode == 400) {
           throw Exception("Request salah format (400): ${response.body}");
+        }
+        if (response.statusCode == 503) {
+          throw Exception(
+            "Model Gemini sedang sibuk (High Demand - 503). Silakan coba beberapa saat lagi.",
+          );
         }
         throw Exception(
           "Gagal memanggil Gemini API (Code: ${response.statusCode})",
